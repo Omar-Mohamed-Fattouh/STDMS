@@ -37,7 +37,8 @@ The shared navigation is responsive and exposes sections according to the signed
 | Attendance | `/Attendance` | Records attendance and provides course/date filters, present/absent summary metrics, and paginated results. Instructors only see their assigned courses. |
 | Office Assignments | `/OfficeAssignment` | Manages one office location per instructor. The list, details, create, edit, and delete workflows are implemented. |
 | Staff accounts | `/Admin/Users` | Administrator-only staff account provisioning and instructor/course assignment management. |
-| Sign in | `/Account/Login` | Staff sign-in; public registration is not provided. |
+| Sign in | `/Account/Login` | Staff sign-in. |
+| Sign up | `/Account/Register` | Self-service account creation; new accounts start with read-only (`ReadOnlyStaff`) access. |
 
 Most sections follow the standard MVC CRUD pattern: list records, view one record, create, edit, and delete. Create and edit forms post to MVC actions and use anti-forgery validation. Validation rules are defined on the model properties with data annotations.
 
@@ -111,7 +112,9 @@ POST create/edit/delete actions use `[ValidateAntiForgeryToken]`. Model validati
 
 ## Sign-in and authorization
 
-The MVC application uses ASP.NET Core Identity with SQL Server-backed accounts and role claims. A fallback authorization policy requires authentication for MVC endpoints unless an action explicitly allows anonymous access. The public surface is limited to sign-in and the access-denied page; account registration is disabled.
+The MVC application uses ASP.NET Core Identity with SQL Server-backed accounts and role claims. A fallback authorization policy requires authentication for MVC endpoints unless an action explicitly allows anonymous access. The public surface is sign-in, self-service sign-up, and the access-denied page.
+
+**2026 redesign:** the site now uses a modern indigo/violet theme with a fixed sidebar shell (collapsing to an off-canvas menu on mobile), a sticky glass topbar, rounded cards/tables/forms, and a split-screen auth experience. `/Account/Register` lets a new user create an account; for safety it always starts with the least-privilege `ReadOnlyStaff` role and signs the user in immediately — an administrator can promote the account afterwards. Password rules are unchanged (12+ characters with upper/lower/digit/symbol).
 
 | Role | Access |
 |---|---|
