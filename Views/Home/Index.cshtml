@@ -1,0 +1,186 @@
+@model STDMS.Models.HomeDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var attendanceRate = Model.AttendanceToday == 0
+        ? 0
+        : (int)Math.Round(Model.PresentToday * 100.0 / Model.AttendanceToday);
+}
+
+<div class="dashboard-page">
+    <section class="dashboard-hero">
+        <div>
+            <span class="dashboard-eyebrow">STUDENT & TEACHER DATA MANAGEMENT</span>
+            <h1>Welcome to STDMS</h1>
+            <p>Your academic operations, all in one place.</p>
+        </div>
+        @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))
+        {
+            <div class="dashboard-hero-actions">
+                <a asp-controller="Student" asp-action="Create" class="btn dashboard-primary-btn">
+                    <i class="fas fa-user-plus me-2" aria-hidden="true"></i>Add student
+                </a>
+                <a asp-controller="Course" asp-action="Create" class="btn dashboard-secondary-btn">
+                    <i class="fas fa-book-open me-2" aria-hidden="true"></i>New course
+                </a>
+            </div>
+        }
+    </section>
+
+    <section class="dashboard-stats" aria-label="School overview">
+        <a asp-controller="Student" asp-action="Index" class="dashboard-stat stat-blue">
+            <span class="stat-icon"><i class="fas fa-user-graduate" aria-hidden="true"></i></span>
+            <span class="stat-label">Students</span>
+            <strong>@Model.TotalStudents.ToString("N0")</strong>
+            <span class="stat-link">View directory <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </a>
+        <a asp-controller="Instructor" asp-action="Index" class="dashboard-stat stat-violet">
+            <span class="stat-icon"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i></span>
+            <span class="stat-label">Instructors</span>
+            <strong>@Model.TotalInstructors.ToString("N0")</strong>
+            <span class="stat-link">View instructors <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </a>
+        <a asp-controller="Course" asp-action="Index" class="dashboard-stat stat-teal">
+            <span class="stat-icon"><i class="fas fa-book" aria-hidden="true"></i></span>
+            <span class="stat-label">Courses</span>
+            <strong>@Model.TotalCourses.ToString("N0")</strong>
+            <span class="stat-link">Explore courses <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </a>
+        <a asp-controller="Department" asp-action="Index" class="dashboard-stat stat-amber">
+            <span class="stat-icon"><i class="fas fa-building" aria-hidden="true"></i></span>
+            <span class="stat-label">Departments</span>
+            <strong>@Model.TotalDepartments.ToString("N0")</strong>
+            <span class="stat-link">View departments <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </a>
+    </section>
+
+    <section class="dashboard-content-grid">
+        <div class="dashboard-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="panel-kicker">LATEST RECORDS</span>
+                    <h2>Recently added students</h2>
+                </div>
+                <a asp-controller="Student" asp-action="Index" class="panel-view-all">All students <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+            </div>
+
+            @if (Model.RecentStudents.Count > 0)
+            {
+                <div class="dashboard-table-wrap">
+                    <table class="table dashboard-table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Student</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Email</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var student in Model.RecentStudents)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="student-avatar">@student.Name.Substring(0, 1).ToUpperInvariant()</span>
+                                        <span class="student-name">@student.Name</span>
+                                    </td>
+                                    <td>@(student.Department?.Name ?? "Unassigned")</td>
+                                    <td class="student-email">@student.Email</td>
+                                    <td class="text-end">
+                                        <a asp-controller="Student" asp-action="Details" asp-route-id="@student.Id" class="row-action" aria-label="View @student.Name">
+                                            <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty">
+                    <span class="empty-icon"><i class="fas fa-user-plus" aria-hidden="true"></i></span>
+                    <h3>No students yet</h3>
+                    <p>Add your first student to start building your directory.</p>
+                    @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))
+                    {
+                        <a asp-controller="Student" asp-action="Create" class="btn dashboard-primary-btn">Add a student</a>
+                    }
+                </div>
+            }
+        </div>
+
+        <aside class="dashboard-side-column">
+            <div class="dashboard-panel attendance-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="panel-kicker">TODAY</span>
+                        <h2>Attendance</h2>
+                    </div>
+                    <span class="attendance-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
+                </div>
+                <div class="attendance-number">@Model.AttendanceToday.ToString("N0")</div>
+                <p class="attendance-caption">attendance records today</p>
+                <div class="attendance-progress" role="progressbar" aria-label="Today's attendance rate" aria-valuenow="@attendanceRate" aria-valuemin="0" aria-valuemax="100">
+                    <span style="width: @(attendanceRate)%"></span>
+                </div>
+                <div class="attendance-summary">
+                    <span><strong>@attendanceRate%</strong> present</span>
+                    <span>@Model.PresentToday of @Model.AttendanceToday</span>
+                </div>
+                <a asp-controller="Attendance" asp-action="Index" class="panel-view-all mt-3">Open attendance <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+            </div>
+
+            <div class="dashboard-panel quick-links-panel">
+                <span class="panel-kicker">QUICK ACCESS</span>
+                <h2>Manage your school</h2>
+                <a asp-controller="Enrollment" asp-action="Index" class="quick-link">
+                    <span class="quick-link-icon quick-blue"><i class="fas fa-clipboard-list" aria-hidden="true"></i></span>
+                    <span><strong>Enrollments</strong><small>@Model.TotalEnrollments.ToString("N0") total records</small></span>
+                    <i class="fas fa-chevron-right quick-chevron" aria-hidden="true"></i>
+                </a>
+                <a asp-controller="OfficeAssignment" asp-action="Index" class="quick-link">
+                    <span class="quick-link-icon quick-violet"><i class="fas fa-door-open" aria-hidden="true"></i></span>
+                    <span><strong>Office assignments</strong><small>Instructor locations</small></span>
+                    <i class="fas fa-chevron-right quick-chevron" aria-hidden="true"></i>
+                </a>
+                <a asp-controller="Attendance" asp-action="Index" class="quick-link">
+                    <span class="quick-link-icon quick-teal"><i class="fas fa-calendar-days" aria-hidden="true"></i></span>
+                    <span><strong>Attendance</strong><small>Daily class records</small></span>
+                    <i class="fas fa-chevron-right quick-chevron" aria-hidden="true"></i>
+                </a>
+            </div>
+        </aside>
+    </section>
+
+    <section class="dashboard-panel enrollment-panel">
+        <div class="panel-heading">
+            <div>
+                <span class="panel-kicker">ACADEMIC ACTIVITY</span>
+                <h2>Recent enrollments</h2>
+            </div>
+            <a asp-controller="Enrollment" asp-action="Index" class="panel-view-all">All enrollments <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i></a>
+        </div>
+        @if (Model.RecentEnrollments.Count > 0)
+        {
+            <div class="enrollment-list">
+                @foreach (var enrollment in Model.RecentEnrollments)
+                {
+                    <div class="enrollment-row">
+                        <span class="enrollment-icon"><i class="fas fa-book" aria-hidden="true"></i></span>
+                        <span class="enrollment-detail">
+                            <strong>@(enrollment.Student?.Name ?? "Student unavailable")</strong>
+                            <small>@(enrollment.Course?.Name ?? "Course unavailable")</small>
+                        </span>
+                        <span class="grade-badge">@(string.IsNullOrWhiteSpace(enrollment.Grade) ? "In progress" : enrollment.Grade)</span>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="dashboard-no-activity">No enrollment records yet.</p>
+        }
+    </section>
+</div>

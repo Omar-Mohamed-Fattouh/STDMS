@@ -1,0 +1,81 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using STDMS.Data;
+using STDMS.Models;
+
+namespace STDMS.Controllers
+{
+    [Authorize(Roles = RoleNames.AttendanceUsers)]
+    public class HomeController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            if (User.IsInRole(RoleNames.Instructor))
+            {
+                return RedirectToAction("Index", "Attendance");
+            }
+
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+            var model = new HomeDashboardViewModel
+            {
+                TotalStudents = await _context.Students.CountAsync(),
+                TotalInstructors = await _context.Instructors.CountAsync(),
+                TotalCourses = await _context.Courses.CountAsync(),
+                TotalDepartments = await _context.Departments.CountAsync(),
+                TotalEnrollments = await _context.Enrollments.CountAsync(),
+                AttendanceToday = await _context.Attendances
+                    .CountAsync(attendance => attendance.Date >= today && attendance.Date < tomorrow),
+                PresentToday = await _context.Attendances
+                    .CountAsync(attendance => attendance.Date >= today
+                        && attendance.Date < tomorrow
+                        && attendance.IsPresent),
+                RecentStudents = await _context.Students
+                    .AsNoTracking()
+                    .Include(student => student.Department)
+                    .OrderByDescending(student => student.Id)
+                    .Take(5)
+                    .ToListAsync(),
+                RecentEnrollments = await _context.Enrollments
+                    .AsNoTracking()
+                    .Include(enrollment => enrollment.Student)
+                    .Include(enrollment => enrollment.Course)
+                    .OrderByDescending(enrollment => enrollment.Id)
+                    .Take(5)
+                    .ToListAsync()
+            };
+
+            return View(model);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        // Target for UseStatusCodePagesWithReExecute: renders the shared
+        // NotFound view (which previously existed but was never served,
+        // so every 404 returned an empty body).
+        [Route("Home/PageNotFound")]
+        public IActionResult PageNotFound()
+        {
+            Response.StatusCode = StatusCodes.Status404NotFound;
+            return View("NotFound");
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
+}

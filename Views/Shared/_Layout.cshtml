@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - STDMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/STDMS.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    string NavClass(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase)
+            ? "app-nav-link active"
+            : "app-nav-link";
+}
+<body class="@(isAuthenticated ? "app-body" : "auth-body")">
+
+@if (isAuthenticated)
+{
+    <div class="app-shell">
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <aside class="app-sidebar" id="appSidebar" aria-label="Main navigation">
+            <a class="app-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark"><i class="fas fa-graduation-cap" aria-hidden="true"></i></span>
+                <span class="app-brand-text">STDMS<small>School Manager</small></span>
+            </a>
+
+            <nav class="app-nav">
+                <span class="app-nav-heading">Menu</span>
+                @if (!User.IsInRole(RoleNames.Instructor))
+                {
+                    <a class="@NavClass("Home")" asp-controller="Home" asp-action="Index">
+                        <i class="fas fa-house" aria-hidden="true"></i><span>Dashboard</span>
+                    </a>
+                    <a class="@NavClass("Student")" asp-controller="Student" asp-action="Index">
+                        <i class="fas fa-user-graduate" aria-hidden="true"></i><span>Students</span>
+                    </a>
+                    <a class="@NavClass("Department")" asp-controller="Department" asp-action="Index">
+                        <i class="fas fa-building" aria-hidden="true"></i><span>Departments</span>
+                    </a>
+                    <a class="@NavClass("Course")" asp-controller="Course" asp-action="Index">
+                        <i class="fas fa-book-open" aria-hidden="true"></i><span>Courses</span>
+                    </a>
+                    <a class="@NavClass("Instructor")" asp-controller="Instructor" asp-action="Index">
+                        <i class="fas fa-chalkboard-user" aria-hidden="true"></i><span>Instructors</span>
+                    </a>
+                    <a class="@NavClass("Enrollment")" asp-controller="Enrollment" asp-action="Index">
+                        <i class="fas fa-clipboard-list" aria-hidden="true"></i><span>Enrollments</span>
+                    </a>
+                    <a class="@NavClass("OfficeAssignment")" asp-controller="OfficeAssignment" asp-action="Index">
+                        <i class="fas fa-door-open" aria-hidden="true"></i><span>Office Assignments</span>
+                    </a>
+                }
+                <a class="@NavClass("Attendance")" asp-controller="Attendance" asp-action="Index">
+                    <i class="fas fa-calendar-check" aria-hidden="true"></i><span>Attendance</span>
+                </a>
+
+                @if (User.IsInRole(RoleNames.Administrator))
+                {
+                    <span class="app-nav-heading">Administration</span>
+                    <a class="@NavClass("Admin")" asp-controller="Admin" asp-action="Users">
+                        <i class="fas fa-users-gear" aria-hidden="true"></i><span>Staff accounts</span>
+                    </a>
+                }
+            </nav>
+
+            <div class="app-sidebar-user">
+                <span class="user-avatar">@((User.Identity?.Name ?? "?").Trim()[0].ToString().ToUpperInvariant())</span>
+                <span class="user-meta">
+                    <strong title="@User.Identity?.Name">@User.Identity?.Name</strong>
+                    <small>@(User.IsInRole(RoleNames.Administrator) ? "Administrator" : User.IsInRole(RoleNames.AcademicAdministrator) ? "Academic Admin" : User.IsInRole(RoleNames.Instructor) ? "Instructor" : "Staff")</small>
+                </span>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="btn btn-sidebar-logout" title="Sign out" aria-label="Sign out">
+                        <i class="fas fa-right-from-bracket" aria-hidden="true"></i>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="app-main">
+            <header class="app-topbar">
+                <button type="button" class="btn btn-topbar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                <div class="app-topbar-title">
+                    <h1>@(ViewData["Title"] ?? "STDMS")</h1>
+                    <small>Student &amp; Teacher Data Management</small>
+                </div>
+                <div class="app-topbar-actions">
+                    <span class="user-chip"><i class="fas fa-circle-user me-1" aria-hidden="true"></i>@User.Identity?.Name</span>
+                </div>
+            </header>
+
+            <main class="app-content">
+                <div class="app-content-inner">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show slide-in" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show slide-in" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["InfoMessage"] != null)
+                    {
+                        <div class="alert alert-info alert-dismissible fade show slide-in" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>@TempData["InfoMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @RenderBody()
+                </div>
+            </main>
+
+            <footer class="app-footer">
+                &copy; 2026 STDMS — Student &amp; Teacher Data Management System
+            </footer>
+        </div>
+    </div>
+}
+else
+{
+    <header class="auth-header">
+        <a class="app-brand auth-brand" asp-controller="Home" asp-action="Index">
+            <span class="brand-mark"><i class="fas fa-graduation-cap" aria-hidden="true"></i></span>
+            <span class="app-brand-text">STDMS<small>School Manager</small></span>
+        </a>
+        <nav class="auth-header-links">
+            <a asp-controller="Account" asp-action="Login">Sign in</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm px-3">Create account</a>
+        </nav>
+    </header>
+
+    <main class="auth-main">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show slide-in auth-alert" role="alert">
+                <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="auth-footer">
+        &copy; 2026 STDMS — Student &amp; Teacher Data Management System
+    </footer>
+}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var toggle = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('appSidebar');
+            var backdrop = document.getElementById('sidebarBackdrop');
+            if (!toggle || !sidebar) return;
+            function close() { sidebar.classList.remove('open'); backdrop && backdrop.classList.remove('show'); }
+            toggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+                backdrop && backdrop.classList.toggle('show');
+            });
+            backdrop && backdrop.addEventListener('click', close);
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="background: rgba(0,0,0,0.5); z-index: 9999;">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="text-center text-white">
+                <div class="loading mb-3"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

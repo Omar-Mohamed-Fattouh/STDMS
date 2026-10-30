@@ -1,0 +1,15 @@
+@model STDMS.Models.Department
+
+@{
+    ViewData["Title"] = "Department Details";
+}
+
+<h2>Department Details</h2>
+
+<div class="mb-3">
+    <label class="form-label">Name</label>
+    <p class="form-control-plaintext">@Model.Name</p>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

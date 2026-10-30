@@ -1,0 +1,56 @@
+@model STDMS.Models.Attendance
+
+@{
+    ViewData["Title"] = "Add Attendance";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Add Attendance Record</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="mb-3">
+                            <label asp-for="StudentId" class="form-label">Student</label>
+                            <select asp-for="StudentId" class="form-select" asp-items="@(ViewBag.StudentsList as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()))">
+                                <option value="">-- Select Student --</option>
+                            </select>
+                            <span asp-validation-for="StudentId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CourseId" class="form-label">Course</label>
+                            <select asp-for="CourseId" class="form-select" asp-items="@(ViewBag.CoursesList as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()))">
+                                <option value="">-- Select Course --</option>
+                            </select>
+                            <span asp-validation-for="CourseId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Date" class="form-label">Date</label>
+                            <input asp-for="Date" class="form-control" type="date" />
+                            <span asp-validation-for="Date" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsPresent" type="checkbox" class="form-check-input" />
+                            <label asp-for="IsPresent" class="form-check-label">Present</label>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">Save Attendance</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

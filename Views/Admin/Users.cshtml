@@ -1,0 +1,32 @@
+@model STDMS.Models.AdminUsersViewModel
+@{
+    ViewData["Title"] = "Staff accounts";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0">Staff accounts</h1>
+    <div class="d-flex gap-2">
+        <a asp-action="CourseAssignments" class="btn btn-outline-primary">Course assignments</a>
+        <a asp-action="CreateUser" class="btn btn-primary">Create account</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Email</th><th>Role</th><th>Instructor profile</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>@user.Role</td>
+                        <td>@(user.InstructorName ?? "—")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

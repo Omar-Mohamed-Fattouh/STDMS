@@ -1,0 +1,54 @@
+@model STDMS.Models.Enrollment
+
+@{
+    ViewData["Title"] = "Create Enrollment";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Create New Enrollment</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="StudentId" class="form-label">Student</label>
+                                <select asp-for="StudentId" class="form-select" asp-items="@(ViewBag.Students as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()))">
+                                    <option value="">-- Select Student --</option>
+                                </select>
+                                <span asp-validation-for="StudentId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CourseId" class="form-label">Course</label>
+                                <select asp-for="CourseId" class="form-select" asp-items="@(ViewBag.Courses as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>()))">
+                                    <option value="">-- Select Course --</option>
+                                </select>
+                                <span asp-validation-for="CourseId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Grade" class="form-label">Grade (Optional)</label>
+                            <input asp-for="Grade" class="form-control" placeholder="Enter grade (e.g., A, B+, 85)" />
+                            <span asp-validation-for="Grade" class="text-danger"></span>
+                            <div class="form-text">Leave empty if grade is not yet assigned</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">Create Enrollment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

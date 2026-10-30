@@ -1,0 +1,41 @@
+@model STDMS.Models.Course
+
+@{
+    ViewData["Title"] = "Create Course";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Create New Course</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Course Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter course name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Credits" class="form-label">Credits</label>
+                            <input asp-for="Credits" type="number" min="1" max="10" class="form-control" placeholder="Enter credit hours" />
+                            <span asp-validation-for="Credits" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-success">Create Course</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

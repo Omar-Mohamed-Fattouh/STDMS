@@ -1,0 +1,59 @@
+@model STDMS.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+
+<div class="auth-card">
+    <section class="auth-showcase">
+        <span class="auth-showcase-badge"><i class="fas fa-graduation-cap me-2" aria-hidden="true"></i>STDMS</span>
+        <h2>Your school,<br />beautifully organized.</h2>
+        <p>Students, teachers, courses, enrollments and attendance — all in one modern workspace.</p>
+        <ul class="auth-showcase-list">
+            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Live dashboard &amp; attendance insights</li>
+            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Students, courses &amp; enrollments in seconds</li>
+            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Role-based access for your whole staff</li>
+        </ul>
+    </section>
+
+    <section class="auth-form-panel">
+        <span class="auth-eyebrow">Welcome back</span>
+        <h1>Sign in to STDMS</h1>
+        <p class="auth-subtitle">Enter your staff credentials to continue.</p>
+
+        <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <label class="auth-field">
+                <span class="auth-field-label"><i class="fas fa-envelope" aria-hidden="true"></i> Email address</span>
+                <input asp-for="Email" class="form-control form-control-lg" autocomplete="username" placeholder="you@school.edu" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </label>
+
+            <label class="auth-field">
+                <span class="auth-field-label"><i class="fas fa-lock" aria-hidden="true"></i> Password</span>
+                <input asp-for="Password" class="form-control form-control-lg" autocomplete="current-password" placeholder="••••••••••••" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </label>
+
+            <div class="auth-form-row">
+                <div class="form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 auth-submit">
+                Sign in <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
+            </button>
+        </form>
+
+        <p class="auth-switch">
+            New to STDMS?
+            <a asp-action="Register">Create an account</a>
+        </p>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

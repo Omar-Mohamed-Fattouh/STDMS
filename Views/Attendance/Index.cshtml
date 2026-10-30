@@ -1,0 +1,153 @@
+@model STDMS.Models.AttendanceIndexViewModel
+@{
+    ViewData["Title"] = "Attendance";
+    var result = Model.Result;
+    var canManage = User.IsInRole(RoleNames.Administrator)
+        || User.IsInRole(RoleNames.AcademicAdministrator)
+        || User.IsInRole(RoleNames.Instructor);
+}
+
+<section class="page-heading d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <span class="panel-kicker">DAILY CLASS RECORDS</span>
+        <h1 class="h2 mb-1">Attendance</h1>
+        <p class="text-muted mb-0">Review attendance by course and date.</p>
+    </div>
+    @if (canManage)
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-2" aria-hidden="true"></i>Add record</a>
+    }
+</section>
+
+<section class="attendance-summary-grid mb-4" aria-label="Attendance summary">
+    <div class="attendance-summary-card">
+        <span class="summary-label">Records</span>
+        <strong>@result.TotalRecords.ToString("N0")</strong>
+        <span class="summary-icon summary-blue"><i class="fas fa-clipboard-list" aria-hidden="true"></i></span>
+    </div>
+    <div class="attendance-summary-card">
+        <span class="summary-label">Present</span>
+        <strong>@result.PresentRecords.ToString("N0")</strong>
+        <span class="summary-icon summary-green"><i class="fas fa-user-check" aria-hidden="true"></i></span>
+    </div>
+    <div class="attendance-summary-card">
+        <span class="summary-label">Absent</span>
+        <strong>@result.AbsentRecords.ToString("N0")</strong>
+        <span class="summary-icon summary-red"><i class="fas fa-user-xmark" aria-hidden="true"></i></span>
+    </div>
+    <div class="attendance-summary-card">
+        <span class="summary-label">Present rate</span>
+        <strong>@result.PresentPercentage%</strong>
+        <span class="summary-icon summary-violet"><i class="fas fa-chart-pie" aria-hidden="true"></i></span>
+    </div>
+</section>
+
+<form asp-action="Index" method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label asp-for="CourseId" class="form-label">Course</label>
+                <select asp-for="CourseId" asp-items="Model.Courses" class="form-select">
+                    <option value="">All available courses</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Date" class="form-label">Date</label>
+                <input asp-for="Date" type="date" class="form-control" />
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">Apply filters</button>
+                <a asp-action="Index" class="btn btn-outline-secondary" aria-label="Clear filters" title="Clear filters">
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">
+        Showing @result.Records.Count of @result.TotalRecords.ToString("N0") records
+        @if (result.TotalPages > 0)
+        {
+            <span> · Page @result.Page of @result.TotalPages</span>
+        }
+    </p>
+</div>
+
+<div class="card border-0 shadow-sm">
+    @if (result.Records.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Student</th>
+                        <th scope="col">Course</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var attendance in result.Records)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@(attendance.Student?.Name ?? "N/A")</td>
+                            <td>@(attendance.Course?.Name ?? "N/A")</td>
+                            <td>@attendance.Date.ToString("MMM d, yyyy")</td>
+                            <td>
+                                @if (attendance.IsPresent)
+                                {
+                                    <span class="status-pill status-present"><i class="fas fa-check" aria-hidden="true"></i> Present</span>
+                                }
+                                else
+                                {
+                                    <span class="status-pill status-absent"><i class="fas fa-xmark" aria-hidden="true"></i> Absent</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Attendance actions for @attendance.Student?.Name">
+                                    <a asp-action="Details" asp-route-id="@attendance.Id" class="btn btn-outline-secondary">View</a>
+                                    @if (canManage)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@attendance.Id" class="btn btn-outline-primary">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@attendance.Id" class="btn btn-outline-danger">Delete</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="card-body text-center py-5">
+            <span class="empty-icon mb-3"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
+            <h2 class="h5">No attendance records found</h2>
+            <p class="text-muted mb-0">Try changing the selected course or date.</p>
+        </div>
+    }
+</div>
+
+@if (result.TotalPages > 1)
+{
+    <nav class="mt-4" aria-label="Attendance pages">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(result.Page <= 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-courseId="@Model.CourseId" asp-route-date="@Model.Date?.ToString("yyyy-MM-dd")" asp-route-page="@(result.Page - 1)">Previous</a>
+            </li>
+            @for (var pageNumber = result.FirstVisiblePage; pageNumber <= result.LastVisiblePage; pageNumber++)
+            {
+                <li class="page-item @(pageNumber == result.Page ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-courseId="@Model.CourseId" asp-route-date="@Model.Date?.ToString("yyyy-MM-dd")" asp-route-page="@pageNumber">@pageNumber</a>
+                </li>
+            }
+            <li class="page-item @(result.Page >= result.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-courseId="@Model.CourseId" asp-route-date="@Model.Date?.ToString("yyyy-MM-dd")" asp-route-page="@(result.Page + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+}

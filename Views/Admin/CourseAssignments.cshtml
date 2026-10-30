@@ -1,0 +1,54 @@
+@model STDMS.Models.InstructorCourseAssignmentsViewModel
+@{
+    ViewData["Title"] = "Instructor course assignments";
+}
+
+<h1 class="h2 mb-4">Instructor course assignments</h1>
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="CourseAssignments" method="post" class="row g-3 align-items-end">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-md-5">
+                <label asp-for="InstructorId" class="form-label">Instructor</label>
+                <select asp-for="InstructorId" asp-items="Model.Instructors" class="form-select">
+                    <option value="0">Select an instructor</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="CourseId" class="form-label">Course</label>
+                <select asp-for="CourseId" asp-items="Model.Courses" class="form-select">
+                    <option value="0">Select a course</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Instructor</th><th>Course</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var assignment in Model.Assignments)
+                {
+                    <tr>
+                        <td>@assignment.Instructor.Name</td>
+                        <td>@assignment.Course.Name</td>
+                        <td class="text-end">
+                            <form asp-action="DeleteCourseAssignment" method="post">
+                                <input type="hidden" name="instructorId" value="@assignment.InstructorId" />
+                                <input type="hidden" name="courseId" value="@assignment.CourseId" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

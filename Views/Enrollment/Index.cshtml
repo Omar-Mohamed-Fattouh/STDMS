@@ -1,0 +1,115 @@
+@model STDMS.Models.EnrollmentDirectoryViewModel
+@{
+    ViewData["Title"] = "Enrollments";
+    var canManage = User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator);
+}
+
+<section class="page-heading d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <span class="panel-kicker">ACADEMIC RECORDS</span>
+        <h1 class="h2 mb-1">Enrollments</h1>
+        <p class="text-muted mb-0">Find student course registrations and grades.</p>
+    </div>
+    @if (canManage)
+    {
+        <a asp-action="Create" class="btn btn-primary"><i class="fas fa-plus me-2" aria-hidden="true"></i>New enrollment</a>
+    }
+</section>
+
+<form asp-action="Index" method="get" class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="enrollment-search" class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search text-muted" aria-hidden="true"></i></span>
+                    <input id="enrollment-search" type="search" name="search" value="@Model.Search" class="form-control" placeholder="Student, course, or grade" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="course-filter" class="form-label">Course</label>
+                <select id="course-filter" name="courseId" asp-items="Model.Courses" class="form-select">
+                    <option value="">All courses</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary" title="Clear filters" aria-label="Clear filters">
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<p class="text-muted mb-3">@Model.TotalEnrollments.ToString("N0") enrollment records</p>
+
+<div class="card border-0 shadow-sm">
+    @if (Model.Enrollments.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr><th scope="col">Student</th><th scope="col">Course</th><th scope="col">Grade</th><th scope="col" class="text-end">Actions</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var enrollment in Model.Enrollments)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@(enrollment.Student?.Name ?? "Student unavailable")</td>
+                            <td>@(enrollment.Course?.Name ?? "Course unavailable")</td>
+                            <td>
+                                @if (string.IsNullOrWhiteSpace(enrollment.Grade))
+                                {
+                                    <span class="badge bg-light text-secondary">In progress</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary-subtle text-primary">@enrollment.Grade</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group" aria-label="Enrollment actions">
+                                    <a asp-action="Details" asp-route-id="@enrollment.Id" class="btn btn-outline-secondary">View</a>
+                                    @if (canManage)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@enrollment.Id" class="btn btn-outline-primary">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@enrollment.Id" class="btn btn-outline-danger">Delete</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="card-body text-center py-5">
+            <span class="empty-icon mb-3"><i class="fas fa-clipboard-list" aria-hidden="true"></i></span>
+            <h2 class="h5">No enrollments found</h2>
+            <p class="text-muted mb-0">Try another search or select a different course.</p>
+        </div>
+    }
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4" aria-label="Enrollment pages">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-search="@Model.Search" asp-route-courseId="@Model.CourseId" asp-route-page="@(Model.Page - 1)">Previous</a>
+            </li>
+            @for (var pageNumber = Model.FirstVisiblePage; pageNumber <= Model.LastVisiblePage; pageNumber++)
+            {
+                <li class="page-item @(pageNumber == Model.Page ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-search="@Model.Search" asp-route-courseId="@Model.CourseId" asp-route-page="@pageNumber">@pageNumber</a>
+                </li>
+            }
+            <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-search="@Model.Search" asp-route-courseId="@Model.CourseId" asp-route-page="@(Model.Page + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+}

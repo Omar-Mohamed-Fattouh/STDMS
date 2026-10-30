@@ -1,0 +1,58 @@
+@model STDMS.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<div class="auth-card">
+    <section class="auth-showcase">
+        <span class="auth-showcase-badge"><i class="fas fa-graduation-cap me-2" aria-hidden="true"></i>STDMS</span>
+        <h2>Join your school<br />workspace.</h2>
+        <p>Create your account in a minute and start exploring STDMS right away.</p>
+        <ul class="auth-showcase-list">
+            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Instant access — no approval wait</li>
+            <li><i class="fas fa-circle-check" aria-hidden="true"></i> Starts with safe, read-only access</li>
+            <li><i class="fas fa-circle-check" aria-hidden="true"></i> An admin can upgrade your role anytime</li>
+        </ul>
+    </section>
+
+    <section class="auth-form-panel">
+        <span class="auth-eyebrow">Get started</span>
+        <h1>Create your account</h1>
+        <p class="auth-subtitle">New accounts start with read-only staff access.</p>
+
+        <form asp-action="Register" method="post" class="auth-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <label class="auth-field">
+                <span class="auth-field-label"><i class="fas fa-envelope" aria-hidden="true"></i> Email address</span>
+                <input asp-for="Email" class="form-control form-control-lg" autocomplete="email" placeholder="you@school.edu" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </label>
+
+            <label class="auth-field">
+                <span class="auth-field-label"><i class="fas fa-lock" aria-hidden="true"></i> Password</span>
+                <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" placeholder="12+ characters, mixed case &amp; symbol" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </label>
+
+            <label class="auth-field">
+                <span class="auth-field-label"><i class="fas fa-lock" aria-hidden="true"></i> Confirm password</span>
+                <input asp-for="ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" placeholder="Repeat your password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 auth-submit">
+                Create account <i class="fas fa-arrow-right ms-1" aria-hidden="true"></i>
+            </button>
+        </form>
+
+        <p class="auth-switch">
+            Already have an account?
+            <a asp-action="Login">Sign in</a>
+        </p>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

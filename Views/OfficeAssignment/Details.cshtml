@@ -1,0 +1,20 @@
+@model STDMS.Models.OfficeAssignment
+
+@{
+    ViewData["Title"] = "Office Assignment Details";
+}
+
+<h2>Office Assignment Details</h2>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Instructor:</dt>
+        <dd class="col-sm-10">@Model.Instructor?.Name</dd>
+
+        <dt class="col-sm-2">Location:</dt>
+        <dd class="col-sm-10">@Model.Location</dd>
+    </dl>
+</div>
+
+<a asp-action="Edit" asp-route-id="@Model.InstructorId" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

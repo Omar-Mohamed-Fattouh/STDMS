@@ -1,0 +1,43 @@
+# ---- .NET ----
+bin/
+obj/
+*.user
+*.suo
+.vs/
+TestResults/
+*.dll
+*.pdb
+*.exe
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- Local databases & secrets ----
+*.mdf
+*.ldf
+.env
+.env.*
+!.env.example
+secrets.json
+
+# ---- Backups / legacy copies ----
+backups/
+Model/
+Model_backup/
+Models_backup/
+
+# ---- Editors / OS ----
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+Desktop.ini
+
+# ---- Python test helpers ----
+__pycache__/
+*.pyc
