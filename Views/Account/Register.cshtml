@@ -31,13 +31,27 @@
 
             <label class="auth-field">
                 <span class="auth-field-label"><i class="fas fa-lock" aria-hidden="true"></i> Password</span>
-                <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" placeholder="12+ characters, mixed case &amp; symbol" />
+                <span class="password-wrap">
+                    <input asp-for="Password" class="form-control form-control-lg" autocomplete="new-password" placeholder="12+ characters, mixed case &amp; symbol" data-strength-input />
+                    <button type="button" class="password-toggle" data-password-toggle aria-label="Show password" aria-pressed="false" title="Show password" tabindex="-1">
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                    </button>
+                </span>
+                <span class="password-strength" data-strength-meter hidden>
+                    <span class="password-strength-track"><span class="password-strength-bar"></span></span>
+                    <small data-strength-text></small>
+                </span>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </label>
 
             <label class="auth-field">
                 <span class="auth-field-label"><i class="fas fa-lock" aria-hidden="true"></i> Confirm password</span>
-                <input asp-for="ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" placeholder="Repeat your password" />
+                <span class="password-wrap">
+                    <input asp-for="ConfirmPassword" class="form-control form-control-lg" autocomplete="new-password" placeholder="Repeat your password" />
+                    <button type="button" class="password-toggle" data-password-toggle aria-label="Show password" aria-pressed="false" title="Show password" tabindex="-1">
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                    </button>
+                </span>
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </label>
 

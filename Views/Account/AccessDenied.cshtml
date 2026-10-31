@@ -2,8 +2,20 @@
     ViewData["Title"] = "Access denied";
 }
 
-<div class="text-center py-5">
-    <h1 class="display-5">Access denied</h1>
-    <p class="lead">Your account does not have permission to view this page.</p>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to dashboard</a>
+<div class="error-shell">
+    <span class="error-icon error-icon-brass"><i class="fas fa-lock" aria-hidden="true"></i></span>
+    <span class="error-code">403</span>
+    <h1>You don't have access to this page</h1>
+    <p class="error-message">
+        Your account doesn't have permission to view this section.
+        If you believe you should have access, ask an administrator to check your role.
+    </p>
+    <div class="error-actions">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-house me-1" aria-hidden="true"></i> Back to dashboard
+        </a>
+        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Go back
+        </button>
+    </div>
 </div>

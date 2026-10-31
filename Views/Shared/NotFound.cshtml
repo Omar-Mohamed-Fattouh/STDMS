@@ -1,7 +1,21 @@
 @{
-    ViewData["Title"] = "Not Found";
+    ViewData["Title"] = "Page not found";
 }
 
-<h1 class="text-danger">404 - Not Found</h1>
-<p>The resource you're looking for could not be found.</p>
-<a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Return to Home</a>
+<div class="error-shell">
+    <span class="error-icon error-icon-brass"><i class="fas fa-search" aria-hidden="true"></i></span>
+    <span class="error-code">404</span>
+    <h1>We couldn't find that page</h1>
+    <p class="error-message">
+        The page you're looking for may have been moved, renamed, or it never existed.
+        Check the address for typos, or head back to somewhere familiar.
+    </p>
+    <div class="error-actions">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-house me-1" aria-hidden="true"></i> Back to dashboard
+        </a>
+        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+            <i class="fas fa-arrow-left me-1" aria-hidden="true"></i> Go back
+        </button>
+    </div>
+</div>

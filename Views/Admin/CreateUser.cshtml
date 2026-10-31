@@ -15,7 +15,16 @@
             </div>
             <div class="mb-3">
                 <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                <div class="password-wrap">
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" data-strength-input />
+                    <button type="button" class="password-toggle" data-password-toggle aria-label="Show password" aria-pressed="false" title="Show password" tabindex="-1">
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="password-strength mt-2" data-strength-meter hidden>
+                    <span class="password-strength-track"><span class="password-strength-bar"></span></span>
+                    <small data-strength-text></small>
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
                 <div class="form-text">Use at least 12 characters, including uppercase, lowercase, a number, and a symbol.</div>
             </div>

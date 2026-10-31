@@ -62,14 +62,34 @@ namespace STDMS.Controllers
             return View();
         }
 
-        // Target for UseStatusCodePagesWithReExecute: renders the shared
-        // NotFound view (which previously existed but was never served,
-        // so every 404 returned an empty body).
+        // Target for UseStatusCodePagesWithReExecute: serves a designed
+        // error page for any bare status code (404 -> NotFound view,
+        // 403 -> AccessDenied view, anything else -> generic Error view),
+        // preserving the original status code. Before this wiring existed,
+        // every such response returned an empty body.
         [Route("Home/PageNotFound")]
         public IActionResult PageNotFound()
         {
-            Response.StatusCode = StatusCodes.Status404NotFound;
-            return View("NotFound");
+            var feature = HttpContext.Features
+                .Get<Microsoft.AspNetCore.Diagnostics.IStatusCodeReExecuteFeature>();
+            var statusCode = feature?.OriginalStatusCode ?? StatusCodes.Status404NotFound;
+            Response.StatusCode = statusCode;
+
+            return statusCode switch
+            {
+                StatusCodes.Status404NotFound => View("NotFound"),
+                StatusCodes.Status403Forbidden => View("~/Views/Account/AccessDenied.cshtml"),
+                _ => StatusError(statusCode)
+            };
+        }
+
+        private IActionResult StatusError(int statusCode)
+        {
+            ViewData["StatusCode"] = statusCode;
+            return View("Error", new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

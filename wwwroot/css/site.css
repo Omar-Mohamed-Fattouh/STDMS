@@ -1024,21 +1024,21 @@ dl.row dt, dl.row dd { margin-bottom: .65rem; }
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: url('/lib/fontawesome/webfonts/fa-solid-900.woff2') format('woff2');
+  src: url('/lib/fontawesome/webfonts/fa-solid-900.woff2?v=20261031') format('woff2');
 }
 @font-face {
   font-family: 'Font Awesome 6 Free';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/lib/fontawesome/webfonts/fa-regular-400.woff2') format('woff2');
+  src: url('/lib/fontawesome/webfonts/fa-regular-400.woff2?v=20261031') format('woff2');
 }
 @font-face {
   font-family: 'Font Awesome 6 Brands';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/lib/fontawesome/webfonts/fa-brands-400.woff2') format('woff2');
+  src: url('/lib/fontawesome/webfonts/fa-brands-400.woff2?v=20261031') format('woff2');
 }
 
 /* ---------- Bootstrap palette alignment ---------- */
@@ -1120,6 +1120,61 @@ h1, h2, h3, .h1, .h2, .h3,
   .auth-main table.table tbody td[data-label="Actions"]::before { display: none; }
   .dashboard-table { min-width: 0; }
   .student-email { max-width: 55vw; }
+}
+
+/* ---------- password visibility toggle & strength meter ---------- */
+.password-wrap { position: relative; display: block; }
+.password-wrap .form-control { padding-right: 3rem; }
+.password-toggle {
+  position: absolute; top: 50%; right: .35rem; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; padding: 0;
+  border: 0; border-radius: 10px; background: transparent;
+  color: #6B7A70; cursor: pointer;
+  transition: color .15s ease, background .15s ease;
+}
+.password-toggle:hover, .password-toggle:focus-visible { color: #1E5B44; background: #EAF0EA; }
+
+.password-strength { display: block; }
+.password-strength-track {
+  display: block; height: 6px; border-radius: 999px;
+  background: #E9E4D8; overflow: hidden; margin-bottom: .3rem;
+}
+.password-strength-bar {
+  display: block; height: 100%; width: 0; border-radius: inherit;
+  background-color: #B3372F; transition: width .25s ease, background-color .25s ease;
+}
+.password-strength small { font-weight: 600; font-size: .78rem; }
+
+/* ---------- designed error pages (403 / 404 / 5xx) ---------- */
+.error-shell {
+  max-width: 620px; margin: 5vh auto 3rem; padding: 3rem 2.25rem;
+  text-align: center; background: #fff;
+  border: 1px solid var(--stdms-line); border-radius: 22px;
+  box-shadow: 0 18px 44px rgba(31, 36, 34, .08);
+}
+.error-icon {
+  display: inline-grid; place-items: center;
+  width: 72px; height: 72px; border-radius: 50%;
+  font-size: 1.65rem; margin-bottom: 1.1rem;
+}
+.error-icon-brass { color: #9A6B2F; background: #F6ECDA; }
+.error-icon-red { color: #B3372F; background: #FBEAEA; }
+.error-code {
+  display: block; font-family: "Fraunces", Georgia, serif;
+  font-size: 4.6rem; font-weight: 700; line-height: 1;
+  color: #1E5B44; letter-spacing: -.02em;
+}
+.error-shell h1 { margin: .9rem 0 .6rem; font-size: 1.65rem; }
+.error-message { color: var(--stdms-muted); max-width: 44ch; margin: 0 auto 1.7rem; }
+.error-actions { display: flex; flex-wrap: wrap; gap: .65rem; justify-content: center; }
+.error-request-id { margin: 1.6rem 0 0; color: var(--stdms-muted); font-size: .78rem; }
+.error-request-id code { color: #54655B; }
+
+@media (max-width: 640px) {
+  .error-shell { padding: 2.2rem 1.35rem; margin-top: 2vh; }
+  .error-code { font-size: 3.4rem; }
+  .error-actions .btn { flex: 1 1 auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {

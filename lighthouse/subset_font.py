@@ -23,6 +23,7 @@ used = [
     "exclamation-circle", "graduation-cap", "house", "info-circle", "lock",
     "plus", "right-from-bracket", "search", "user-check", "user-graduate",
     "user-plus", "users-gear", "user-xmark", "xmark",
+    "eye", "eye-slash", "triangle-exclamation", "arrow-left",
 ]
 
 missing = [u for u in used if u not in mapping]
