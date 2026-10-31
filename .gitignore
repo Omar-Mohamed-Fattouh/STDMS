@@ -28,6 +28,7 @@ secrets.json
 /web.config
 appsettings.Production.json
 Properties/PublishProfiles/
+/PASSWORDS.txt
 
 # ---- Backups / legacy copies ----
 backups/
