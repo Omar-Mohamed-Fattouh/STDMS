@@ -93,10 +93,10 @@
                     @foreach (var attendance in result.Records)
                     {
                         <tr>
-                            <td class="fw-semibold">@(attendance.Student?.Name ?? "N/A")</td>
-                            <td>@(attendance.Course?.Name ?? "N/A")</td>
-                            <td>@attendance.Date.ToString("MMM d, yyyy")</td>
-                            <td>
+                            <td class="fw-semibold" data-label="Student">@(attendance.Student?.Name ?? "N/A")</td>
+                            <td data-label="Course">@(attendance.Course?.Name ?? "N/A")</td>
+                            <td data-label="Date">@attendance.Date.ToString("MMM d, yyyy")</td>
+                            <td data-label="Status">
                                 @if (attendance.IsPresent)
                                 {
                                     <span class="status-pill status-present"><i class="fas fa-check" aria-hidden="true"></i> Present</span>
@@ -106,7 +106,7 @@
                                     <span class="status-pill status-absent"><i class="fas fa-xmark" aria-hidden="true"></i> Absent</span>
                                 }
                             </td>
-                            <td class="text-end">
+                            <td class="text-end" data-label="Actions">
                                 <div class="btn-group btn-group-sm" role="group" aria-label="Attendance actions for @attendance.Student?.Name">
                                     <a asp-action="Details" asp-route-id="@attendance.Id" class="btn btn-outline-secondary">View</a>
                                     @if (canManage)

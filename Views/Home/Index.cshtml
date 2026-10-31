@@ -80,13 +80,13 @@
                             @foreach (var student in Model.RecentStudents)
                             {
                                 <tr>
-                                    <td>
+                                    <td data-label="Student">
                                         <span class="student-avatar">@student.Name.Substring(0, 1).ToUpperInvariant()</span>
                                         <span class="student-name">@student.Name</span>
                                     </td>
-                                    <td>@(student.Department?.Name ?? "Unassigned")</td>
-                                    <td class="student-email">@student.Email</td>
-                                    <td class="text-end">
+                                    <td data-label="Department">@(student.Department?.Name ?? "Unassigned")</td>
+                                    <td class="student-email" data-label="Email">@student.Email</td>
+                                    <td class="text-end" data-label="Actions">
                                         <a asp-controller="Student" asp-action="Details" asp-route-id="@student.Id" class="row-action" aria-label="View @student.Name">
                                             <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
                                         </a>

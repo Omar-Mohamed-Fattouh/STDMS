@@ -21,9 +21,9 @@
                 @foreach (var user in Model.Users)
                 {
                     <tr>
-                        <td>@user.Email</td>
-                        <td>@user.Role</td>
-                        <td>@(user.InstructorName ?? "—")</td>
+                        <td data-label="Email">@user.Email</td>
+                        <td data-label="Role">@user.Role</td>
+                        <td data-label="Instructor profile">@(user.InstructorName ?? "—")</td>
                     </tr>
                 }
             </tbody>

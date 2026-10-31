@@ -114,7 +114,7 @@ POST create/edit/delete actions use `[ValidateAntiForgeryToken]`. Model validati
 
 The MVC application uses ASP.NET Core Identity with SQL Server-backed accounts and role claims. A fallback authorization policy requires authentication for MVC endpoints unless an action explicitly allows anonymous access. The public surface is sign-in, self-service sign-up, and the access-denied page.
 
-**2026 redesign:** the site now uses a modern indigo/violet theme with a fixed sidebar shell (collapsing to an off-canvas menu on mobile), a sticky glass topbar, rounded cards/tables/forms, and a split-screen auth experience. `/Account/Register` lets a new user create an account; for safety it always starts with the least-privilege `ReadOnlyStaff` role and signs the user in immediately — an administrator can promote the account afterwards. Password rules are unchanged (12+ characters with upper/lower/digit/symbol).
+**2026 redesign:** the site uses an editorial academic theme — flat deep green (`#1E5B44`) and brass (`#9A6B2F`) on warm paper (`#F6F4EE`), Fraunces serif headings with Inter body text, a fixed sidebar shell (collapsing to an off-canvas menu on mobile), a sticky glass topbar, and a split-screen auth experience. On screens ≤640 px, data tables reflow into labelled record cards (via `data-label` cell attributes) instead of scrolling sideways, inputs use 16 px text to prevent iOS focus zoom, and buttons meet comfortable tap heights. `/Account/Register` lets a new user create an account; for safety it always starts with the least-privilege `ReadOnlyStaff` role and signs the user in immediately — an administrator can promote the account afterwards. Password rules are unchanged (12+ characters with upper/lower/digit/symbol).
 
 | Role | Access |
 |---|---|

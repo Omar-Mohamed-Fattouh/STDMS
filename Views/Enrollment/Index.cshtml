@@ -56,9 +56,9 @@
                     @foreach (var enrollment in Model.Enrollments)
                     {
                         <tr>
-                            <td class="fw-semibold">@(enrollment.Student?.Name ?? "Student unavailable")</td>
-                            <td>@(enrollment.Course?.Name ?? "Course unavailable")</td>
-                            <td>
+                            <td class="fw-semibold" data-label="Student">@(enrollment.Student?.Name ?? "Student unavailable")</td>
+                            <td data-label="Course">@(enrollment.Course?.Name ?? "Course unavailable")</td>
+                            <td data-label="Grade">
                                 @if (string.IsNullOrWhiteSpace(enrollment.Grade))
                                 {
                                     <span class="badge bg-light text-secondary">In progress</span>
@@ -68,7 +68,7 @@
                                     <span class="badge bg-primary-subtle text-primary">@enrollment.Grade</span>
                                 }
                             </td>
-                            <td class="text-end">
+                            <td class="text-end" data-label="Actions">
                                 <div class="btn-group btn-group-sm" role="group" aria-label="Enrollment actions">
                                     <a asp-action="Details" asp-route-id="@enrollment.Id" class="btn btn-outline-secondary">View</a>
                                     @if (canManage)

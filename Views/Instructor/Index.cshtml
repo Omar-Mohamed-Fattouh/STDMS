@@ -23,9 +23,9 @@
         @foreach (var instructor in Model)
         {
             <tr>
-                <td>@instructor.Name</td>
-                <td>@instructor.HireDate.ToShortDateString()</td>
-                <td>
+                <td data-label="Name">@instructor.Name</td>
+                <td data-label="Hire Date">@instructor.HireDate.ToShortDateString()</td>
+                <td data-label="Actions">
                     @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))
                     {
                         <a asp-action="Edit" asp-route-id="@instructor.Id" class="btn btn-warning btn-sm">Edit</a>

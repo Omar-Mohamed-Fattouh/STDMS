@@ -37,9 +37,9 @@
                 @foreach (var assignment in Model.Assignments)
                 {
                     <tr>
-                        <td>@assignment.Instructor.Name</td>
-                        <td>@assignment.Course.Name</td>
-                        <td class="text-end">
+                        <td data-label="Instructor">@assignment.Instructor.Name</td>
+                        <td data-label="Course">@assignment.Course.Name</td>
+                        <td class="text-end" data-label="Actions">
                             <form asp-action="DeleteCourseAssignment" method="post">
                                 <input type="hidden" name="instructorId" value="@assignment.InstructorId" />
                                 <input type="hidden" name="courseId" value="@assignment.CourseId" />

@@ -32,11 +32,11 @@
                             @foreach (var course in Model)
                             {
                                 <tr>
-                                    <td>@course.Name</td>
-                                    <td>
+                                    <td data-label="Course Name">@course.Name</td>
+                                    <td data-label="Credits">
                                         <span class="badge bg-primary">@course.Credits Credits</span>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center" data-label="Actions">
                                         <div class="btn-group" role="group">
                                             <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-info btn-sm">Details</a>
                                             @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))

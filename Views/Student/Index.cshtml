@@ -69,14 +69,14 @@
                     @foreach (var student in Model.Students)
                     {
                         <tr>
-                            <td>
+                            <td data-label="Student">
                                 <span class="student-avatar">@student.Name.Substring(0, 1).ToUpperInvariant()</span>
                                 <span class="student-name">@student.Name</span>
                             </td>
-                            <td>@student.Email</td>
-                            <td>@student.DateOfBirth.ToString("MMM d, yyyy")</td>
-                            <td><span class="badge bg-light text-dark">@student.Department?.Name</span></td>
-                            <td class="text-end">
+                            <td data-label="Email">@student.Email</td>
+                            <td data-label="Date of birth">@student.DateOfBirth.ToString("MMM d, yyyy")</td>
+                            <td data-label="Department"><span class="badge bg-light text-dark">@student.Department?.Name</span></td>
+                            <td class="text-end" data-label="Actions">
                                 <div class="btn-group btn-group-sm" role="group" aria-label="Actions for @student.Name">
                                     <a asp-action="Details" asp-route-id="@student.Id" class="btn btn-outline-secondary">View</a>
                                     @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))

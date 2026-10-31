@@ -33,9 +33,9 @@
                     @foreach (var office in Model)
                     {
                         <tr>
-                            <td class="fw-semibold">@(office.Instructor?.Name ?? "Instructor unavailable")</td>
-                            <td>@office.Location</td>
-                            <td class="text-end">
+                            <td class="fw-semibold" data-label="Instructor">@(office.Instructor?.Name ?? "Instructor unavailable")</td>
+                            <td data-label="Office location">@office.Location</td>
+                            <td class="text-end" data-label="Actions">
                                 <div class="btn-group btn-group-sm" role="group" aria-label="Actions for @(office.Instructor?.Name ?? "office assignment")">
                                     <a asp-action="Details" asp-route-id="@office.InstructorId" class="btn btn-outline-secondary">Details</a>
                                     @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))
