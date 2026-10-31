@@ -4,9 +4,9 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'STDMS — Student & Teacher Data Management',
+  description:
+    'STDMS is a complete school records system: students, teachers, courses, enrollments, and attendance in one role-based workspace built with ASP.NET Core 8 and SQL Server.',
 }
 
 export default function RootLayout({
