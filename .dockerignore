@@ -1,9 +1,0 @@
-.git
-.next
-bin
-obj
-node_modules
-.vs
-*.md
-Dockerfile
-.dockerignore

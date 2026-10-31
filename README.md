@@ -6,7 +6,7 @@ STDMS is a server-rendered school-record management website built with ASP.NET C
 
 The live MVC application is configured to run locally at `http://localhost:5265` (or `https://localhost:7176` when using the HTTPS launch profile).
 
-> The project also contains a separate Next.js app under `app/`, plus a duplicate set of generated Next.js files under `Views/app/`. These currently render a placeholder and are not connected to the MVC routes or SQL Server database. The functioning STDMS website is the ASP.NET MVC application, not the Next.js placeholder.
+> **Live deployment:** the application runs publicly at [stdms.runasp.net](http://stdms.runasp.net) (MonsterASP.NET free ASP.NET hosting + SQL Server). See [Deployment](#deployment) below.
 
 ## Contents
 
@@ -18,6 +18,7 @@ The live MVC application is configured to run locally at `http://localhost:5265`
 - [Seed data](#seed-data)
 - [Technology stack](#technology-stack)
 - [Run the MVC application](#run-the-mvc-application)
+- [Deployment](#deployment)
 - [Project structure](#project-structure)
 - [Current limitations and recommended work](#current-limitations-and-recommended-work)
 - [Validation performed](#validation-performed)
@@ -208,15 +209,10 @@ The local demo database was filled with a realistic volume using a one-off scrip
 - .NET 8 ASP.NET Core MVC
 - Razor views and Tag Helpers
 - ASP.NET Core Identity and Entity Framework Core 8.0.22
-- SQL Server provider and SQL Server LocalDB
-- Bootstrap 5.3.3 loaded from jsDelivr
-- Font Awesome 6.4.0 and Google Fonts Inter loaded externally
+- SQL Server provider and SQL Server LocalDB (local) / SQL Server (hosted)
+- Bootstrap 5.3.3, Font Awesome 6.4.0, Inter and Fraunces fonts — all self-hosted under `wwwroot/`
 
 The project file is `STDMS.csproj`. Nullable reference types are enabled.
-
-### Separate Next.js placeholder
-
-The repository also contains a Next.js 15.2.4 application, with React 19, in the root `app/` and `components/` directories. It has npm scripts for `dev`, `build`, and `start`. Its home page is a placeholder and does not use the MVC database or its controllers. `Views/app/` contains another copy of generated Next-related files and should not be confused with the MVC Razor `Views/` tree.
 
 ## Run the MVC application
 
@@ -241,7 +237,14 @@ dotnet run --launch-profile https
 
 The configured HTTPS URL is `https://localhost:7176`. At startup, the application applies EF Core migrations and attempts to seed any empty tables.
 
-The Next.js placeholder is a separate app and is not required to run the MVC website. Its npm package manifest is `package.json`; `npm run dev` uses the Next.js development server (normally port 3000).
+## Deployment
+
+The site is deployed to **MonsterASP.NET** (free Windows/IIS ASP.NET hosting) at [stdms.runasp.net](http://stdms.runasp.net), with a hosted SQL Server database.
+
+1. `dotnet publish STDMS.csproj -c Release -o publish_output`
+2. Upload the contents of `publish_output` to the site's `wwwroot` over FTP (upload an `app_offline.htm` first so running DLLs unlock, then delete it afterwards).
+3. Runtime configuration lives in a `web.config` in the project root that is **git-ignored and never committed**: it carries the production connection string (`ConnectionStrings__DefaultConnection`) and the bootstrap admin credentials (`BootstrapAdmin__Email` / `BootstrapAdmin__Password`) as IIS environment variables. On first start the app applies EF Core migrations, seeds the sample tables, and creates the roles and bootstrap administrator automatically.
+4. The auth cookie uses `CookieSecurePolicy.SameAsRequest`, so sign-in works over HTTP and the cookie is automatically marked `Secure` once HTTPS is enabled. On the free plan, HTTPS (Let's Encrypt) is activated manually by MonsterASP support on request — that is the only remaining step before the site can enforce HTTPS/HSTS.
 
 ## Project structure
 
@@ -259,12 +262,10 @@ STDMS/
 ├── Services/        Data-access services
 ├── Views/           Razor views for MVC pages and shared layout
 ├── wwwroot/         Static CSS, JavaScript, libraries, and favicon
-├── app/             Separate Next.js placeholder entry points
-├── components/      Next.js UI components
 ├── Program.cs       ASP.NET dependency injection and request pipeline
 ├── STDMS.csproj     .NET project definition
-├── appsettings.json SQL Server connection string and logging settings
-└── package.json     Next.js dependency manifest and npm scripts
+├── appsettings.json LocalDB connection string and logging settings
+└── web.config       IIS hosting + production secrets (git-ignored, not in repo)
 ```
 
 ## Current limitations and recommended work
@@ -323,7 +324,7 @@ Measured with Lighthouse (Edge/Chromium, mobile emulation) after the optimizatio
 | `/Student` | 100 | 100 | 100 | 100 |
 | `/Attendance` | 100 | 100 | 100 | 100 |
 
-A full sweep of every page type (lists, create, edit, details, and delete pages for all seven entities, admin pages, and the student directory with 92 records) scores 100/100/100/100; the Next.js placeholder page scores 99/100/100/100 (the single performance point is React runtime main-thread time under throttled mobile emulation).
+A full sweep of every page type (lists, create, edit, details, and delete pages for all seven entities, admin pages, and the student directory with 92 records) scores 100/100/100/100 on the local machine. On the live free hosting the same pages keep 100 accessibility and 100 SEO; performance lands in the high 80s/low 90s and Best Practices at 78 — both gaps are hosting-side, not code: Best Practices loses exactly the two HTTPS audits (free plan has no certificate until support activates one), and performance is bounded by shared-host response times (256 MB RAM, EU datacenter, app-pool cold starts) under Lighthouse's throttled mobile network, versus ~0 ms latency locally.
 
 Dashboard also scores 100/100/100/100 with the desktop preset. Responsive behaviour was audited at 375 px, 768 px, 1024 px, and 1440 px with no page-level horizontal overflow; tables scroll inside their cards on small screens. Re-run via `npx lighthouse <url> --chrome-path=<Edge/Chrome>` (for authenticated pages, pass a session cookie with `--extra-headers`).
 

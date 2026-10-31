@@ -64,7 +64,10 @@ namespace STDMS
                 options.LoginPath = "/Account/Login";
                 options.AccessDeniedPath = "/Account/AccessDenied";
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                // SameAsRequest: the cookie is marked Secure automatically once the
+                // site runs over HTTPS; forcing Always breaks sign-in entirely on
+                // HTTP-only hosting (e.g. MonsterASP free plan before HTTPS activation).
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
                 options.SlidingExpiration = true;
@@ -116,13 +119,11 @@ namespace STDMS
             {
                 OnPrepareResponse = context =>
                 {
-                    // Versioned library/font assets rarely change: cache them hard.
-                    var path = context.Context.Request.Path.Value ?? string.Empty;
-                    if (path.StartsWith("/lib/", StringComparison.OrdinalIgnoreCase)
-                        || path.StartsWith("/fonts/", StringComparison.OrdinalIgnoreCase))
-                    {
-                        context.Context.Response.Headers.CacheControl = "public,max-age=2592000,immutable";
-                    }
+                    // Every stylesheet/script is referenced with asp-append-version,
+                    // so static assets can be cached hard: a new build changes the
+                    // URL, never a stale file. This matters most on shared hosting,
+                    // where repeat visits should barely touch the server.
+                    context.Context.Response.Headers.CacheControl = "public,max-age=2592000,immutable";
                 }
             });
             app.UseRouting();
