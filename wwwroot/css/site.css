@@ -123,7 +123,7 @@ body {
 
 .dashboard-page {
   --dashboard-ink: #17233b;
-  --dashboard-muted: #758198;
+  --dashboard-muted: #55677f;
   --dashboard-line: #e8edf4;
   max-width: 1440px;
   margin: 0 auto;
@@ -185,7 +185,7 @@ body {
 }
 
 .summary-label {
-  color: #758198;
+  color: #55677f;
   font-size: .82rem;
   font-weight: 500;
 }
@@ -405,7 +405,7 @@ body {
 
 .panel-kicker {
   margin-bottom: .35rem;
-  color: #8995a9;
+  color: #55677f;
   font-size: .62rem;
 }
 
@@ -744,7 +744,7 @@ body {
   --stdms-primary: #4f46e5;
   --stdms-primary-2: #7c3aed;
   --stdms-ink: #0f172a;
-  --stdms-muted: #64748b;
+  --stdms-muted: #52637a;
   --stdms-line: #e6e9f2;
   --stdms-bg: #f3f5fb;
   --stdms-radius: 16px;
@@ -983,4 +983,70 @@ h2, .h2 { font-weight: 750; letter-spacing: -.02em; }
   .auth-showcase { padding: 1.8rem; }
   .auth-showcase-list { display: none; }
   .auth-form-panel { padding: 1.8rem; }
+}
+
+/* ---------- responsive & accessibility polish ---------- */
+img, svg, video { max-width: 100%; height: auto; }
+.app-content, .app-main, .dashboard-panel, .card { min-width: 0; }
+
+:focus-visible {
+  outline: 3px solid rgba(79, 70, 229, .55);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.table td .btn { margin: .1rem .1rem .1rem 0; }
+.table td { overflow-wrap: break-word; }
+
+dl.row dt, dl.row dd { margin-bottom: .65rem; }
+
+@media (max-width: 767.98px) {
+  .app-topbar { padding: .8rem 1rem; }
+  .app-topbar-title h1 { font-size: 1.08rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 52vw; }
+  .app-topbar-title small { display: none; }
+  .auth-header { flex-wrap: wrap; gap: .8rem; }
+  h1, .h1 { font-size: 1.65rem; }
+  h2, .h2 { font-size: 1.35rem; }
+  .table thead th, .table tbody td { padding: .65rem .7rem; font-size: .86rem; }
+  .btn { padding: .55rem .9rem; }
+  .d-flex.gap-2, .d-flex.gap-3 { flex-wrap: wrap; }
+  .pagination { flex-wrap: wrap; }
+}
+
+@media (max-width: 420px) {
+  .auth-form-panel, .auth-showcase { padding: 1.35rem; }
+  .auth-showcase h2 { font-size: 1.5rem; }
+  .dashboard-hero-actions .btn { width: 100%; }
+}
+
+/* FontAwesome icons: never block text rendering on the icon font */
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/lib/fontawesome/webfonts/fa-solid-900.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/lib/fontawesome/webfonts/fa-regular-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Font Awesome 6 Brands';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/lib/fontawesome/webfonts/fa-brands-400.woff2') format('woff2');
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

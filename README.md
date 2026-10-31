@@ -60,7 +60,7 @@ Instructor accounts are routed directly to their scoped attendance list when the
 - Font Awesome icons
 - Bootstrap JavaScript and stylesheet
 
-Bootstrap, Google Fonts (Inter), and Font Awesome are referenced from external CDNs. The site therefore needs network access for those external resources. Dashboard-specific styles and responsive breakpoints are in `wwwroot/css/site.css`.
+Bootstrap, Inter, and Font Awesome are self-hosted under `wwwroot/` (no CDN or network access needed). Dashboard-specific styles and responsive breakpoints are in `wwwroot/css/site.css`.
 
 ### Dashboard
 
@@ -301,8 +301,7 @@ All three create only throwaway `Smoke…` records and delete them again.
 - **Account lifecycle:** administrators can create staff accounts and assign roles, but password reset, account disable, and role-change workflows are not yet implemented.
 - **Security testing:** no automated authentication/authorization integration tests exist yet. Manually test each role, especially instructor course boundaries, before production use.
 - **Sensitive data in logs:** the action filter no longer logs form values, query strings, or user names. The request middleware still logs URL paths; review logging policy and retention before production.
-- **External static assets:** Bootstrap, Font Awesome, and Google Fonts are served by external providers. Offline use or restrictive networks may leave the interface without these assets; hosting them locally would remove that dependency.
-- **Client-side validation assets:** jQuery Validation and unobtrusive validation now load from pinned external CDN URLs in `_ValidationScriptsPartial.cshtml`. They were verified as loaded in the browser; local hosting would remove the CDN availability dependency.
+- **External static assets:** ~~Bootstrap, Font Awesome, and Google Fonts are served by external providers~~ — resolved: all CSS/JS/fonts (including jQuery validation) are self-hosted under `wwwroot/lib` and `wwwroot/fonts`, compressed, and cached; see the Lighthouse section.
 - **Local-only database configuration:** the current connection string targets LocalDB. A deployment needs a managed SQL Server connection string and environment-specific secret/configuration handling.
 
 ### Data behavior and feature gaps
@@ -315,6 +314,22 @@ All three create only throwaway `Smoke…` records and delete them again.
 - **Demo seeds:** sample data is hard-coded, and the initializer uses table emptiness checks. Production data setup should be deliberate and should not depend on demo IDs.
 - **No tests found:** no C# test files were found in the project during inspection.
 - **Build warnings:** the project builds with zero errors, but existing migration naming and model nullability warnings remain.
+
+## Performance, accessibility & SEO (Lighthouse)
+
+All CSS/JS/fonts are now **self-hosted** (`wwwroot/lib`, `wwwroot/fonts`) — the app no longer depends on CDNs, so it also works offline. Responses are Brotli/Gzip-compressed with long-lived caching for library/font assets, scripts are deferred, and the FontAwesome solid font was subset from 150 KB to ~3 KB covering only the icons the views use (regenerate with `py -3.13 lighthouse/subset_font.py`; the full `.ttf` is kept for that purpose).
+
+Measured with Lighthouse (Edge/Chromium, mobile emulation) after the optimization pass:
+
+| Page | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| `/Account/Login` | 100 | 100 | 100 | 100 |
+| `/Account/Register` | 100 | 100 | 100 | 100 |
+| `/` (Dashboard) | 100 | 100 | 100 | 100 |
+| `/Student` | 100 | 100 | 100 | 100 |
+| `/Attendance` | 100 | 100 | 100 | 100 |
+
+Dashboard also scores 100/100/100/100 with the desktop preset. Responsive behaviour was audited at 375 px, 768 px, 1024 px, and 1440 px with no page-level horizontal overflow; tables scroll inside their cards on small screens. Re-run via `npx lighthouse <url> --chrome-path=<Edge/Chrome>` (use `lighthouse/get_cookie.py` + `--extra-headers=./lighthouse/headers.json` for authenticated pages — that file contains a session cookie and is git-ignored).
 
 ## Validation performed
 

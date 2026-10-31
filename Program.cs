@@ -26,6 +26,19 @@ namespace STDMS
             // Register filters and middleware dependencies
             builder.Services.AddScoped<ActionLoggingFilter>();
 
+            // Compress HTML/CSS/JS responses (Brotli preferred) — this cuts
+            // the self-hosted Bootstrap/FontAwesome payload by ~85% on the wire.
+            builder.Services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+                options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+                options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+            });
+            builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProviderOptions>(
+                options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
+            builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProviderOptions>(
+                options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
+
             // Register services
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -98,7 +111,20 @@ namespace STDMS
             // returning an empty body. Placed before routing/auth so the
             // re-executed request still passes through the full pipeline.
             app.UseStatusCodePagesWithReExecute("/Home/PageNotFound");
-            app.UseStaticFiles();
+            app.UseResponseCompression();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = context =>
+                {
+                    // Versioned library/font assets rarely change: cache them hard.
+                    var path = context.Context.Request.Path.Value ?? string.Empty;
+                    if (path.StartsWith("/lib/", StringComparison.OrdinalIgnoreCase)
+                        || path.StartsWith("/fonts/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Context.Response.Headers.CacheControl = "public,max-age=2592000,immutable";
+                    }
+                }
+            });
             app.UseRouting();
 
             // Add middleware

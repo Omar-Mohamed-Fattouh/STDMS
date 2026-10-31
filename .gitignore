@@ -41,3 +41,7 @@ Desktop.ini
 # ---- Python test helpers ----
 __pycache__/
 *.pyc
+
+# ---- Lighthouse reports (headers.json contains a session cookie!) ----
+/lighthouse/*.json
+/lighthouse/*.html
