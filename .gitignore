@@ -50,3 +50,6 @@ __pycache__/
 # ---- Lighthouse reports (headers.json contains a session cookie!) ----
 /lighthouse/*.json
 /lighthouse/*.html
+
+# ---- Publish output ----
+publish_output/

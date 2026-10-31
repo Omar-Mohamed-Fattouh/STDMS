@@ -239,18 +239,17 @@ The configured HTTPS URL is `https://localhost:7176`. At startup, the applicatio
 
 ## Deployment
 
-The site is deployed to **MonsterASP.NET** (free Windows/IIS ASP.NET hosting) at [stdms.runasp.net](http://stdms.runasp.net), with a hosted SQL Server database.
+The site is deployed to **MonsterASP.NET** (free Windows/IIS ASP.NET hosting) at [stdms.runasp.net](https://stdms.runasp.net), with a hosted SQL Server database.
 
 1. `dotnet publish STDMS.csproj -c Release -o publish_output`
 2. Upload the contents of `publish_output` to the site's `wwwroot` over FTP (upload an `app_offline.htm` first so running DLLs unlock, then delete it afterwards).
 3. Runtime configuration lives in a `web.config` in the project root that is **git-ignored and never committed**: it carries the production connection string (`ConnectionStrings__DefaultConnection`) and the bootstrap admin credentials (`BootstrapAdmin__Email` / `BootstrapAdmin__Password`) as IIS environment variables. On first start the app applies EF Core migrations, seeds the sample tables, and creates the roles and bootstrap administrator automatically.
-4. The auth cookie uses `CookieSecurePolicy.SameAsRequest`, so sign-in works over HTTP and the cookie is automatically marked `Secure` once HTTPS is enabled. On the free plan, HTTPS (Let's Encrypt) is activated manually by MonsterASP support on request — that is the only remaining step before the site can enforce HTTPS/HSTS.
+4. The auth cookie uses `CookieSecurePolicy.SameAsRequest`, so the cookie is automatically marked `Secure` now that HTTPS is live. HTTPS is active: a free Let's Encrypt certificate (auto-renewing) was enabled from the MonsterASP panel together with the panel's force-HTTPS redirect, and the app adds its own HTTPS redirection + HSTS on top, so plain HTTP requests are upgraded end to end.
 
 ## Project structure
 
 ```text
 STDMS/
-├── Contracts/       Service interfaces
 ├── Controllers/     ASP.NET MVC controllers
 ├── Data/            EF Core DbContext
 ├── Filters/         MVC filters, including action logging
@@ -259,7 +258,7 @@ STDMS/
 ├── Models/          Database entities and dashboard view model
 ├── Properties/      Launch profiles
 ├── Seed/            Migration invocation, sample data, and Identity role/bootstrap setup
-├── Services/        Data-access services
+├── Services/        Data-access services (Interfaces/ holds the contracts)
 ├── Views/           Razor views for MVC pages and shared layout
 ├── wwwroot/         Static CSS, JavaScript, libraries, and favicon
 ├── Program.cs       ASP.NET dependency injection and request pipeline
@@ -324,12 +323,15 @@ Measured with Lighthouse (Edge/Chromium, mobile emulation) after the optimizatio
 | `/Student` | 100 | 100 | 100 | 100 |
 | `/Attendance` | 100 | 100 | 100 | 100 |
 
-A full sweep of every page type (lists, create, edit, details, and delete pages for all seven entities, admin pages, and the student directory with 92 records) scores 100/100/100/100 on the local machine. On the live free hosting the same pages keep 100 accessibility and 100 SEO; performance lands in the high 80s/low 90s and Best Practices at 78 — both gaps are hosting-side, not code: Best Practices loses exactly the two HTTPS audits (free plan has no certificate until support activates one), and performance is bounded by shared-host response times (256 MB RAM, EU datacenter, app-pool cold starts) under Lighthouse's throttled mobile network, versus ~0 ms latency locally.
+A full sweep of every page type (lists, create, edit, details, and delete pages for all seven entities, admin pages, and the student directory with 92 records) scores 100/100/100/100 on the local machine. On the live free hosting the same pages keep 100 accessibility, 100 SEO, and — since the Let's Encrypt certificate and force-HTTPS redirect were enabled — 100 Best Practices. Live performance lands in the high 80s/low 90s under Lighthouse's throttled mobile network; that remaining gap is hosting-side, not code: shared-host response times (256 MB RAM, EU datacenter, app-pool cold starts) versus ~0 ms latency locally.
+
+An October 2026 performance pass also tightened the code side: the EF Core context is pooled (`AddDbContextPool`), every read-only service query runs `AsNoTracking()` (which, as a side benefit, removes a latent tracking-conflict crash in the Attendance edit flow), production logging defaults to `Warning` with IIS stdout logging disabled, and the deployed FontAwesome payload is a 3.6 KB subset webfont containing exactly the 36 icons the views use — the unused brands/regular/TTF webfonts (~760 KB) are no longer published.
 
 Dashboard also scores 100/100/100/100 with the desktop preset. Responsive behaviour was audited at 375 px, 768 px, 1024 px, and 1440 px with no page-level horizontal overflow; tables scroll inside their cards on small screens. Re-run via `npx lighthouse <url> --chrome-path=<Edge/Chrome>` (for authenticated pages, pass a session cookie with `--extra-headers`).
 
 ## Validation performed
 
+- October 2026 performance/cleanup pass: anonymous 404s (and missing static files) now reach the designed NotFound page instead of bouncing to login — the redundant authorization fallback policy was removed after confirming every controller carries its own `[Authorize]`. `DbContext` pooling, `AsNoTracking()` on all read-only service queries, production log level lowered to `Warning`, FontAwesome republished as an exact 36-glyph subset (3.6 KB; one previously missing glyph, `fa-key` on the login page, restored), unused brands/regular/TTF webfonts removed, the template `Privacy` placeholder replaced with a real privacy policy linked from both footers, dead `CustomAuthorizationFilter` removed, service contracts moved under `Services/Interfaces/`, and `Services/OfficeAssignmentController.cs` renamed to `OfficeAssignmentService.cs` to match the class it contains.
 - October 2026 pass: built with 0 errors (warnings down from 16 to the 2 pre-existing `CS8981` warnings in the generated `sec` migration). A route smoke test passed all 42 authenticated routes (previously: Student/Create 500, Enrollment Create/Edit empty dropdowns, Privacy 404, empty-body 404s), and create/search/delete round-trips passed for Students, Enrollments, Departments, Courses, Instructors, Office Assignments, and Attendance, cleaning up after themselves. Verified in the browser: login, dashboard, and the previously broken Student/Enrollment create forms.
 - Built `STDMS.csproj` after the Identity, authorization, attendance-scope, and account-management changes: succeeded with zero errors and the existing compiler warnings.
 - Built the latest searchable student directory changes: succeeded with zero warnings and zero errors.

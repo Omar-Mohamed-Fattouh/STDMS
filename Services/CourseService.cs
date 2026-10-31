@@ -16,12 +16,12 @@ namespace STDMS.Services
 
         public async Task<IEnumerable<Course>> GetAllAsync()
         {
-            return await _context.Courses.ToListAsync();
+            return await _context.Courses.AsNoTracking().ToListAsync();
         }
 
         public async Task<Course?> GetByIdAsync(int id)
         {
-            return await _context.Courses.FindAsync(id);
+            return await _context.Courses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task AddAsync(Course course)

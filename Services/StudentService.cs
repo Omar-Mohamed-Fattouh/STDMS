@@ -22,6 +22,7 @@ namespace STDMS.Services
         {
             _logger.LogInformation("Fetching all students...");
             return await _context.Students
+                .AsNoTracking()
                 .Include(s => s.Department)
                 .ToListAsync();
         }
@@ -30,6 +31,7 @@ namespace STDMS.Services
         {
             _logger.LogInformation($"Fetching student with ID = {id}");
             return await _context.Students
+                .AsNoTracking()
                 .Include(s => s.Department)
                 .FirstOrDefaultAsync(s => s.Id == id);
         }

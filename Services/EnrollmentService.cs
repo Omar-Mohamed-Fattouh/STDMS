@@ -17,6 +17,7 @@ namespace STDMS.Services
         public async Task<IEnumerable<Enrollment>> GetAllAsync()
         {
             return await _context.Enrollments
+                                 .AsNoTracking()
                                  .Include(e => e.Student)
                                  .Include(e => e.Course)
                                  .ToListAsync();
@@ -25,6 +26,7 @@ namespace STDMS.Services
         public async Task<Enrollment?> GetByIdAsync(int id)
         {
             return await _context.Enrollments
+                                 .AsNoTracking()
                                  .Include(e => e.Student)
                                  .Include(e => e.Course)
                                  .FirstOrDefaultAsync(e => e.Id == id);

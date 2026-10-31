@@ -39,8 +39,10 @@ namespace STDMS
             builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProviderOptions>(
                 options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
 
-            // Register services
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            // Register services. The context is pooled: on shared hosting every
+            // saved allocation counts, and a pooled context skips the per-request
+            // model/service-provider setup a fresh context would pay.
+            builder.Services.AddDbContextPool<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services
@@ -73,12 +75,12 @@ namespace STDMS
                 options.SlidingExpiration = true;
             });
 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
+            // No FallbackPolicy on purpose: every controller already carries its
+            // own [Authorize] (Account annotates each action individually). A
+            // fallback policy also challenges requests that match NO endpoint,
+            // which bounced anonymous 404s — including missing static files — to
+            // the login page instead of the designed NotFound page.
+            builder.Services.AddAuthorization();
 
             builder.Services.AddScoped<IStudentService, StudentService>();
             builder.Services.AddScoped<ICourseService, CourseService>();

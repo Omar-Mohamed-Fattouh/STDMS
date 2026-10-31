@@ -16,12 +16,12 @@ namespace STDMS.Services
 
         public async Task<IEnumerable<Instructor>> GetAllAsync()
         {
-            return await _context.Instructors.ToListAsync();
+            return await _context.Instructors.AsNoTracking().ToListAsync();
         }
 
         public async Task<Instructor?> GetByIdAsync(int id)
         {
-            return await _context.Instructors.FindAsync(id);
+            return await _context.Instructors.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task AddAsync(Instructor instructor)

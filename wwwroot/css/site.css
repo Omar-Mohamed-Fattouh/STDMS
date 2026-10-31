@@ -1246,3 +1246,12 @@ h1, h2, h3, .h1, .h2, .h3,
     scroll-behavior: auto !important;
   }
 }
+
+/* ---- Privacy policy page ---- */
+.policy-shell { max-width: 760px; margin: 0 auto; padding: 1rem 0 2.5rem; text-align: left; }
+.auth-body .policy-shell { padding-top: 2.2rem; }
+.policy-shell h1 { margin: .45rem 0 .3rem; color: #152A21; }
+.policy-shell h2 { margin: 1.7rem 0 .55rem; font-size: 1.22rem; color: #152A21; }
+.policy-shell p, .policy-shell li { color: #3C4A42; line-height: 1.65; }
+.policy-shell ul { padding-left: 1.25rem; display: grid; gap: .45rem; }
+.policy-updated { color: var(--stdms-muted); font-size: .9rem; margin-bottom: 1.4rem; }

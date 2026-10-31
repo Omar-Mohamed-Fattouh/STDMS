@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace STDMS.Controllers
 {
-    //[TypeFilter(typeof(CustomAuthorizationFilter), Arguments = new object[] { "Admin" })]
     [Authorize(Roles = RoleNames.SchoolRecords)]
     [Route("Department")]
     public class DepartmentController : Controller

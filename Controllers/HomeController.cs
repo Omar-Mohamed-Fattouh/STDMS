@@ -65,6 +65,7 @@ namespace STDMS.Controllers
             return View(model);
         }
 
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
@@ -75,6 +76,10 @@ namespace STDMS.Controllers
         // 403 -> AccessDenied view, anything else -> generic Error view),
         // preserving the original status code. Before this wiring existed,
         // every such response returned an empty body.
+        // AllowAnonymous: without it the fallback policy bounces anonymous
+        // 404s (including missing static files) to the login page instead of
+        // showing the designed NotFound page with its real 404 status.
+        [AllowAnonymous]
         [Route("Home/PageNotFound")]
         public IActionResult PageNotFound()
         {

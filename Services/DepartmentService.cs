@@ -24,13 +24,13 @@ namespace STDMS.Services
         public async Task<IEnumerable<Department>> GetAllAsync()
         {
             _logger.LogInformation("Fetching all departments.");
-            return await _context.Departments.ToListAsync();
+            return await _context.Departments.AsNoTracking().ToListAsync();
         }
 
         public async Task<Department?> GetByIdAsync(int id)
         {
             _logger.LogInformation("Fetching department with ID = {DepartmentId}", id);
-            return await _context.Departments.FindAsync(id);
+            return await _context.Departments.AsNoTracking().FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task AddAsync(Department department)

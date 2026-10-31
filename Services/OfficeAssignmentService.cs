@@ -17,6 +17,7 @@ namespace STDMS.Services
         public async Task<IEnumerable<OfficeAssignment>> GetAllAsync()
         {
             return await _context.OfficeAssignments
+                                 .AsNoTracking()
                                  .Include(o => o.Instructor)
                                  .ToListAsync();
         }
@@ -24,6 +25,7 @@ namespace STDMS.Services
         public async Task<OfficeAssignment?> GetByIdAsync(int instructorId)
         {
             return await _context.OfficeAssignments
+                                 .AsNoTracking()
                                  .Include(o => o.Instructor)
                                  .FirstOrDefaultAsync(o => o.InstructorId == instructorId);
         }

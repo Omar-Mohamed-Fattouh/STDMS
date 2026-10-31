@@ -22,6 +22,7 @@ namespace STDMS.Services
         {
             _logger.LogInformation("Fetching all attendances.");
             return await _context.Attendances
+                                 .AsNoTracking()
                                  .Include(a => a.Student)
                                  .Include(a => a.Course)
                                  .ToListAsync();
@@ -30,6 +31,7 @@ namespace STDMS.Services
         public async Task<IEnumerable<Attendance>> GetForCoursesAsync(IReadOnlyCollection<int> courseIds)
         {
             return await _context.Attendances
+                .AsNoTracking()
                 .Where(attendance => courseIds.Contains(attendance.CourseId))
                 .Include(attendance => attendance.Student)
                 .Include(attendance => attendance.Course)
@@ -92,7 +94,12 @@ namespace STDMS.Services
         public async Task<Attendance?> GetByIdAsync(int id)
         {
             _logger.LogInformation("Fetching attendance with ID = {id}", id);
+            // AsNoTracking matters here beyond speed: the Edit POST fetches the
+            // existing record for its access check and then Update()s the bound
+            // model — a tracked fetch would make EF refuse the second instance
+            // with the same key ("another instance is already being tracked").
             return await _context.Attendances
+                                 .AsNoTracking()
                                  .Include(a => a.Student)
                                  .Include(a => a.Course)
                                  .FirstOrDefaultAsync(a => a.Id == id);

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace STDMS.Controllers
 {
-    //[TypeFilter(typeof(CustomAuthorizationFilter), Arguments = new object[] { "Admin", "Instructor" })]
     [Authorize(Roles = RoleNames.SchoolRecords)]
     [Route("Instructor")]
     public class InstructorController : Controller
