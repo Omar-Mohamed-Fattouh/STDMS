@@ -199,7 +199,7 @@ These are demo records, not verified real-world school data. Since attendance ro
 
 ### Bulk demo data (90+ students)
 
-`seed_data.py` fills a local database with a realistic demo volume — 90 students (`student001@stdms.local` … `student090@stdms.local`), 6 extra departments, 18 instructors with office assignments, 18 courses, 2–3 enrollments per student, and six weekly attendance sessions per enrollment (~1,700 rows total). Run it once with `py -3.13 seed_data.py` (requires `pip install pyodbc`); it exits without changes if the seed students already exist.
+The local demo database was filled with a realistic volume using a one-off script (since removed; recoverable from Git history): 90 students (`student001@stdms.local` … `student090@stdms.local`), 6 extra departments, 18 instructors with office assignments, 18 courses, 2–3 enrollments per student, and six weekly attendance sessions per enrollment (~1,700 rows total).
 
 ## Technology stack
 
@@ -275,7 +275,7 @@ STDMS/
 
 ### Bugs fixed in the October 2026 pass
 
-Found by smoke-testing every authenticated route and every create/edit form (see `test_routes.py`, `test_post.py`, `test_crud_all.py`):
+Found by smoke-testing every authenticated route and every create/edit form:
 
 - **Add Student returned HTTP 500** (`GET /Student/Create`): the controller put a `List<Department>` in `ViewBag.Departments`, but the view binds `asp-items` to `IEnumerable<SelectListItem>`, throwing a `RuntimeBinderException`. The controller now supplies a `SelectList` via `PopulateDepartmentsAsync`, and both Student forms consume it the same way.
 - **Enrollment dropdowns were empty** on Create and Edit: the controller set `ViewBag.StudentsList`/`CoursesList` while the views read `ViewBag.Students`/`Courses`. The names are now aligned, so students/courses can actually be selected.
@@ -286,17 +286,7 @@ Found by smoke-testing every authenticated route and every create/edit form (see
 - Success flash messages were added for Student and Enrollment create/edit/delete, matching Office Assignments.
 - Build warnings dropped from 16 to 2 by initializing non-nullable model properties; the remaining two are `CS8981` in the generated `sec` migration, deliberately left untouched.
 
-To re-run the tests (app must be running on `http://localhost:5265`; the scripts read the admin credentials from the environment — never hard-code them):
-
-```powershell
-$env:STDMS_TEST_EMAIL = "admin@example.org"
-$env:STDMS_TEST_PASSWORD = "<your bootstrap admin password>"
-python test_routes.py     # every GET route, status + empty-dropdown detection
-python test_post.py       # student + enrollment create/search/delete round-trip
-python test_crud_all.py   # create/delete round-trip for every other module
-```
-
-All three create only throwaway `Smoke…` records and delete them again.
+The smoke tests ran as throwaway Python scripts against the app on `http://localhost:5265` (credentials supplied via environment variables, creating and then deleting only temporary `Smoke…` records). The scripts were removed after the validation pass; they remain recoverable from Git history.
 
 ### Security and operations
 
@@ -321,7 +311,7 @@ All three create only throwaway `Smoke…` records and delete them again.
 
 ## Performance, accessibility & SEO (Lighthouse)
 
-All CSS/JS/fonts are now **self-hosted** (`wwwroot/lib`, `wwwroot/fonts`) — the app no longer depends on CDNs, so it also works offline. Responses are Brotli/Gzip-compressed with long-lived caching for library/font assets, scripts are deferred, and the FontAwesome solid font was subset from 150 KB to ~3 KB covering only the icons the views use (regenerate with `py -3.13 lighthouse/subset_font.py`; the full `.ttf` is kept for that purpose).
+All CSS/JS/fonts are now **self-hosted** (`wwwroot/lib`, `wwwroot/fonts`) — the app no longer depends on CDNs, so it also works offline. Responses are Brotli/Gzip-compressed with long-lived caching for library/font assets, scripts are deferred, and the FontAwesome solid font was subset from 150 KB to ~3 KB covering only the icons the views use (the full `.ttf` is kept alongside it).
 
 Measured with Lighthouse (Edge/Chromium, mobile emulation) after the optimization pass:
 
@@ -335,11 +325,11 @@ Measured with Lighthouse (Edge/Chromium, mobile emulation) after the optimizatio
 
 A full sweep of every page type (lists, create, edit, details, and delete pages for all seven entities, admin pages, and the student directory with 92 records) scores 100/100/100/100; the Next.js placeholder page scores 99/100/100/100 (the single performance point is React runtime main-thread time under throttled mobile emulation).
 
-Dashboard also scores 100/100/100/100 with the desktop preset. Responsive behaviour was audited at 375 px, 768 px, 1024 px, and 1440 px with no page-level horizontal overflow; tables scroll inside their cards on small screens. Re-run via `npx lighthouse <url> --chrome-path=<Edge/Chrome>` (use `lighthouse/get_cookie.py` + `--extra-headers=./lighthouse/headers.json` for authenticated pages — that file contains a session cookie and is git-ignored).
+Dashboard also scores 100/100/100/100 with the desktop preset. Responsive behaviour was audited at 375 px, 768 px, 1024 px, and 1440 px with no page-level horizontal overflow; tables scroll inside their cards on small screens. Re-run via `npx lighthouse <url> --chrome-path=<Edge/Chrome>` (for authenticated pages, pass a session cookie with `--extra-headers`).
 
 ## Validation performed
 
-- October 2026 pass: built with 0 errors (warnings down from 16 to the 2 pre-existing `CS8981` warnings in the generated `sec` migration). `test_routes.py` passes all 42 authenticated routes (previously: Student/Create 500, Enrollment Create/Edit empty dropdowns, Privacy 404, empty-body 404s). `test_post.py` and `test_crud_all.py` pass create/search/delete round-trips for Students, Enrollments, Departments, Courses, Instructors, Office Assignments, and Attendance, and clean up after themselves. Verified in the browser: login, dashboard, and the previously broken Student/Enrollment create forms.
+- October 2026 pass: built with 0 errors (warnings down from 16 to the 2 pre-existing `CS8981` warnings in the generated `sec` migration). A route smoke test passed all 42 authenticated routes (previously: Student/Create 500, Enrollment Create/Edit empty dropdowns, Privacy 404, empty-body 404s), and create/search/delete round-trips passed for Students, Enrollments, Departments, Courses, Instructors, Office Assignments, and Attendance, cleaning up after themselves. Verified in the browser: login, dashboard, and the previously broken Student/Enrollment create forms.
 - Built `STDMS.csproj` after the Identity, authorization, attendance-scope, and account-management changes: succeeded with zero errors and the existing compiler warnings.
 - Built the latest searchable student directory changes: succeeded with zero warnings and zero errors.
 - Built attendance filters, summaries, pagination, and corrected create/edit dropdowns: succeeded with zero warnings and zero errors.
