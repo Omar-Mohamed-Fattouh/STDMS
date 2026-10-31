@@ -6,10 +6,10 @@
 
 <h2>Delete Attendance</h2>
 
-<h4>Are you sure you want to delete this record?</h4>
+<h3 class="h4">Are you sure you want to delete this record?</h3>
 
 <div>
-    <h5>@Model.Student?.Name - @Model.Course?.Name on @Model.Date.ToShortDateString()</h5>
+    <h4 class="h5">@Model.Student?.Name - @Model.Course?.Name on @Model.Date.ToShortDateString()</h4>
 
     <form asp-action="DeleteConfirmed">
         <input type="hidden" asp-for="Id" />

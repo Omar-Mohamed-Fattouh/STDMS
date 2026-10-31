@@ -57,7 +57,7 @@
     else
     {
         <div class="alert alert-info text-center">
-            <h4>No courses found</h4>
+            <h2 class="h4">No courses found</h2>
             @if (User.IsInRole(RoleNames.Administrator) || User.IsInRole(RoleNames.AcademicAdministrator))
             {
                 <p>Start by <a asp-action="Create" class="alert-link">creating a new course</a>.</p>
