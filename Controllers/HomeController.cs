@@ -17,8 +17,16 @@ namespace STDMS.Controllers
             _context = context;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
+            // Anonymous visitors get the public welcome page; signed-in staff
+            // continue straight to the dashboard below.
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                return View("Welcome");
+            }
+
             if (User.IsInRole(RoleNames.Instructor))
             {
                 return RedirectToAction("Index", "Attendance");
