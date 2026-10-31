@@ -197,6 +197,10 @@ The model still does not define an academic term, class schedule, or attendance 
 
 These are demo records, not verified real-world school data. Since attendance rows are inserted only when the attendance table is empty, their relative dates are not refreshed on subsequent application starts.
 
+### Bulk demo data (90+ students)
+
+`seed_data.py` fills a local database with a realistic demo volume — 90 students (`student001@stdms.local` … `student090@stdms.local`), 6 extra departments, 18 instructors with office assignments, 18 courses, 2–3 enrollments per student, and six weekly attendance sessions per enrollment (~1,700 rows total). Run it once with `py -3.13 seed_data.py` (requires `pip install pyodbc`); it exits without changes if the seed students already exist.
+
 ## Technology stack
 
 ### Main website
@@ -328,6 +332,8 @@ Measured with Lighthouse (Edge/Chromium, mobile emulation) after the optimizatio
 | `/` (Dashboard) | 100 | 100 | 100 | 100 |
 | `/Student` | 100 | 100 | 100 | 100 |
 | `/Attendance` | 100 | 100 | 100 | 100 |
+
+A full sweep of every page type (lists, create, edit, details, and delete pages for all seven entities, admin pages, and the student directory with 92 records) scores 100/100/100/100; the Next.js placeholder page scores 99/100/100/100 (the single performance point is React runtime main-thread time under throttled mobile emulation).
 
 Dashboard also scores 100/100/100/100 with the desktop preset. Responsive behaviour was audited at 375 px, 768 px, 1024 px, and 1440 px with no page-level horizontal overflow; tables scroll inside their cards on small screens. Re-run via `npx lighthouse <url> --chrome-path=<Edge/Chrome>` (use `lighthouse/get_cookie.py` + `--extra-headers=./lighthouse/headers.json` for authenticated pages — that file contains a session cookie and is git-ignored).
 
