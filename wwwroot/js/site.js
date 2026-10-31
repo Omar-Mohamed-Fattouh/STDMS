@@ -72,6 +72,18 @@
             });
         });
 
+        // ---- Demo access one-click fill (login page) ---------------------
+        document.querySelectorAll("[data-demo-fill]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                var email = document.getElementById("Email");
+                var password = document.getElementById("Password");
+                if (email) email.value = "admin@example.org";
+                if (password) password.value = "Admin!Passw0rd2026";
+                var submit = document.querySelector(".auth-submit");
+                if (submit) submit.focus();
+            });
+        });
+
         // ---- Auto-dismiss flash alerts ----------------------------------
         document.querySelectorAll(".alert.alert-success, .alert.alert-info").forEach(function (alert) {
             setTimeout(function () {
