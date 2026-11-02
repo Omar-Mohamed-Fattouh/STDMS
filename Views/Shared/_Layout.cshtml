@@ -6,6 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="STDMS — Student & Teacher Data Management System. Manage students, instructors, courses, enrollments, office assignments and attendance in one modern, secure workspace." />
     <meta name="theme-color" content="#152A21" />
+    @{
+        // Always emit the public HTTPS origin: WhatsApp and similar crawlers
+        // refuse http:// images, and IIS on MonsterASP can report the request
+        // as HTTP even when the visitor arrived on HTTPS.
+        const string OgOrigin = "https://stdms.runasp.net";
+        var ogTitle = ViewData["Title"] is "Welcome" or "STDMS" or null
+            ? "STDMS — Student & Teacher Data Management System"
+            : $"{ViewData["Title"]} · STDMS";
+        var ogDescription = "STDMS — Student & Teacher Data Management System. Manage students, instructors, courses, enrollments, office assignments and attendance in one modern, secure workspace.";
+        var ogUrl = OgOrigin + Context.Request.Path;
+        var ogImage = OgOrigin + "/og-image.png";
+    }
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="STDMS" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="@ogTitle" />
+    <meta property="og:description" content="@ogDescription" />
+    <meta property="og:url" content="@ogUrl" />
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:image:secure_url" content="@ogImage" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="STDMS — Student & Teacher Data Management System" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@ogTitle" />
+    <meta name="twitter:description" content="@ogDescription" />
+    <meta name="twitter:image" content="@ogImage" />
+    <link rel="canonical" href="@ogUrl" />
     <link rel="preload" href="~/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="~/fonts/inter-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="~/fonts/fraunces-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
